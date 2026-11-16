@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#101827" />
+  <title>ElevateCV — Your next opportunity starts here</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar" id="sidebar">
+      <a class="brand" href="#" aria-label="ElevateCV home">
+        <span class="brand-mark">E</span><span>Elevate<span class="brand-light">CV</span></span>
+      </a>
+      <div class="workspace-label">WORKSPACE</div>
+      <nav class="main-nav">
+        <button class="nav-item active" data-page="overview"><span class="nav-icon">▦</span> Overview</button>
+        <button class="nav-item" data-page="reviewer"><span class="nav-icon">✦</span> CV reviewer <span class="nav-pill">AI</span></button>
+        <button class="nav-item" data-page="history"><span class="nav-icon">◷</span> Review history</button>
+        <button class="nav-item" data-page="guide"><span class="nav-icon">▤</span> CV guide</button>
+      </nav>
+      <div class="sidebar-bottom">
+        <div class="help-card">
+          <div class="help-icon">✧</div>
+          <strong>Make your next move</strong>
+          <p>Small improvements can make a big difference.</p>
+          <button class="text-button" data-go="reviewer">Review my CV <span>→</span></button>
+        </div>
+        <button class="nav-item admin-nav" data-page="admin"><span class="nav-icon">⚙</span> Admin settings</button>
+        <div class="profile-row"><div class="avatar">EC</div><div><strong>ElevateCV</strong><small>Career workspace</small></div><span class="online-dot"></span></div>
+      </div>
+    </aside>
+
+    <main class="main-area">
+      <header class="topbar">
+        <button class="mobile-menu" id="mobileMenu" aria-label="Open menu">☰</button>
+        <div class="breadcrumbs">Workspace <span>/</span> <strong id="crumb">Overview</strong></div>
+        <div class="top-actions"><span class="secure-label"><span class="green-dot"></span> Your workspace</span><button class="top-avatar">EC</button></div>
+      </header>
+
+      <section class="page active" id="page-overview">
+        <div class="welcome-row">
+          <div><div class="eyebrow"><span class="sparkle">✦</span> CAREER TOOLS, MADE CLEAR</div><h1>Make your CV <span>stand out.</span></h1><p class="lead">Get a clearer picture of what is working, what needs attention, and how to move closer to your next opportunity.</p></div>
+          <div class="welcome-art"><div class="orbit orbit-one"></div><div class="orbit orbit-two"></div><div class="doc-art"><div class="doc-head"></div><i></i><i></i><i></i><div class="doc-check">✓</div></div><div class="art-spark">✦</div></div>
+        </div>
+        <div class="stats-grid">
+          <article class="stat-card"><div class="stat-top"><span>CV reviews completed</span><span class="stat-icon lavender">✦</span></div><strong id="statReviews">0</strong><small>Reviews on this device</small></article>
+          <article class="stat-card"><div class="stat-top"><span>Latest CV score</span><span class="stat-icon mint">↗</span></div><strong id="statScore">—</strong><small id="statScoreNote">Complete a review to see your score</small></article>
+          <article class="stat-card"><div class="stat-top"><span>Areas to improve</span><span class="stat-icon peach">◎</span></div><strong id="statImprove">—</strong><small>From your latest review</small></article>
+        </div>
+        <div class="section-heading"><div><h2>Your career toolkit</h2><p>Everything you need to strengthen your application.</p></div><button class="subtle-button" data-go="guide">Explore the guide <span>→</span></button></div>
+        <div class="tool-grid">
+          <article class="tool-card primary-tool"><div class="tool-icon">✦</div><span class="tool-tag">MOST POPULAR</span><h3>AI CV review</h3><p>Check structure, clarity, impact and how well your CV matches a role.</p><button class="button button-white" data-go="reviewer">Start a review <span>→</span></button><div class="tool-watermark">✧</div></article>
+          <article class="tool-card"><div class="tool-icon blue">▤</div><h3>CV writing guide</h3><p>Learn how to write stronger bullet points and organise your experience.</p><button class="link-button" data-go="guide">Read the guide <span>→</span></button></article>
+          <article class="tool-card"><div class="tool-icon gold">◎</div><h3>Application readiness</h3><p>Use a practical checklist before you send your next application.</p><button class="link-button" data-go="guide">View checklist <span>→</span></button></article>
+        </div>
+        <div class="section-heading history-heading"><div><h2>Recent activity</h2><p>Your latest CV reviews appear here.</p></div><button class="subtle-button" data-go="history">View all <span>→</span></button></div>
+        <div class="table-card"><div class="table-head"><span>REVIEW</span><span>DATE</span><span>SCORE</span><span>STATUS</span></div><div id="recentRows" class="empty-row">No reviews yet. Your first review will appear here.</div></div>
+      </section>
+
+      <section class="page" id="page-reviewer">
+        <div class="page-intro"><div class="eyebrow">YOUR PERSONAL CV WORKSPACE</div><h1>CV <span>reviewer</span></h1><p class="lead">Share your CV details and get structured feedback you can act on.</p></div>
+        <div class="review-layout">
+          <div class="panel review-form">
+            <div class="panel-title"><div><span class="step-label">STEP 01</span><h2>Tell us about your application</h2><p>Give your review some context for more useful feedback.</p></div><span class="panel-symbol">✦</span></div>
+            <label id="docTypeLabel">Document type</label><div class="doc-toggle" role="tablist" aria-labelledby="docTypeLabel"><button type="button" class="doc-option active" data-doc="resume" role="tab" aria-selected="true">Resume / CV</button><button type="button" class="doc-option" data-doc="cover" role="tab" aria-selected="false">Cover letter</button></div>
+            <label for="roleInput">Target job title <span class="optional">OPTIONAL</span></label><input id="roleInput" type="text" placeholder="e.g. Marketing Assistant" />
+            <div id="companyField" class="hidden"><label for="companyInput">Organisation name <span class="optional">RECOMMENDED</span></label><input id="companyInput" type="text" placeholder="e.g. Safaricom, UNICEF Kenya" /></div>
+            <label for="jobInput">Job description <span class="optional">OPTIONAL</span></label><textarea id="jobInput" rows="4" placeholder="Paste the job description here to check how your CV aligns with the role..."></textarea>
+            <div class="divider-line"></div>
+            <div class="panel-title compact"><div><span class="step-label">STEP 02</span><h2 id="docStepTitle">Add your CV</h2><p id="docStepText">Upload a .txt file or paste your CV text below.</p></div></div>
+            <label class="upload-zone" for="cvFile"><span class="upload-icon">↑</span><strong>Choose your CV file</strong><small>TXT is read automatically · PDF/DOCX: paste the text below · Max 10 MB</small><span class="file-name" id="fileName">No file selected</span><input id="cvFile" type="file" accept=".pdf,.doc,.docx,.txt" /></label>
+            <div class="or-divider"><span id="orLabel">OR PASTE YOUR CV TEXT</span></div>
+            <textarea id="cvText" class="cv-text" rows="9" placeholder="Paste the text from your CV here. Include your profile, experience, education and skills..."></textarea>
+            <div class="privacy-note"><span>◈</span> Your CV is processed in this browser demo. Avoid entering sensitive personal information.</div>
+            <button class="button button-primary full-button" id="analyseBtn">Analyse my document <span>→</span></button>
+            <p class="demo-note">Demo mode: scoring follows the Harvard-based rubric using rule-based checks. Connect an AI service for genuine AI-powered analysis.</p>
+          </div>
+          <aside class="panel what-you-get"><div class="mini-orb">✦</div><h3 id="coverageTitle">What your review covers</h3><p>Scored out of 100 using a rubric based on Harvard career-office guidance. The number shows each category’s points.</p><div class="coverage-list" id="coverageList"></div><div class="tip-box"><strong>✧ Pro tip</strong><p>Tailor your CV to the specific role. A focused application is often stronger than a generic one.</p></div></aside>
+        </div>
+        <div id="results" class="results-panel hidden"></div>
+      </section>
+
+      <section class="page" id="page-history">
+        <div class="page-intro"><div class="eyebrow">YOUR PROGRESS</div><h1>Review <span>history</span></h1><p class="lead">Keep track of the feedback you have received on this device.</p></div>
+        <div class="panel"><div class="section-heading inner-heading"><div><h2>All reviews</h2><p>Saved locally in this browser.</p></div><button class="subtle-button" id="clearHistory">Clear history</button></div><div id="historyRows" class="history-list"><div class="empty-row">You have not completed a review yet.</div></div></div>
+      </section>
+
+      <section class="page" id="page-guide">
+        <div class="page-intro"><div class="eyebrow">BUILD A STRONGER APPLICATION</div><h1>The CV <span>field guide</span></h1><p class="lead">A practical guide to presenting your experience with clarity and confidence.</p></div>
+        <div class="guide-grid">
+          <article class="guide-card guide-feature"><span class="guide-number">01 / THE FOUNDATION</span><h2>Make the first impression count.</h2><p>Your CV should make it easy for a recruiter to understand who you are, what you can do and why you are relevant to the role.</p><ul><li>Use a clear name and contact section.</li><li>Write a concise, role-focused profile.</li><li>Put your most relevant experience where it is easy to find.</li></ul></article>
+          <article class="guide-card"><span class="guide-number">02 / EXPERIENCE</span><h3>Show the impact</h3><p>Start bullet points with strong action verbs. Explain what you did, how you did it and what changed as a result.</p><div class="example bad"><small>LESS EFFECTIVE</small> Responsible for social media.</div><div class="example good"><small>MORE EFFECTIVE</small> Planned weekly social posts and improved audience engagement through consistent content.</div></article>
+          <article class="guide-card"><span class="guide-number">03 / ATS READINESS</span><h3>Keep formatting readable</h3><p>Use standard section headings, simple layouts and relevant keywords from the job description. Avoid placing essential information inside graphics.</p><div class="check-line">✓ Clear section headings</div><div class="check-line">✓ Consistent dates and formatting</div><div class="check-line">✓ Relevant role keywords</div></article>
+          <article class="guide-card"><span class="guide-number">04 / FINAL CHECK</span><h3>Before you apply</h3><p>Give your CV one final review before sending it.</p><div class="check-line">✓ Check spelling and grammar</div><div class="check-line">✓ Confirm contact details</div><div class="check-line">✓ Match the CV to the vacancy</div><div class="check-line">✓ Save with a professional filename</div></article>
+          <article class="guide-card guide-wide"><span class="guide-number">05 / HOW YOU'RE SCORED</span><h3>Score bands</h3><p>Every CV and cover letter is scored out of 100 using a rubric based on Harvard FAS Mignone Center for Career Success guidance.</p><div class="band-grid"><div><span class="band-chip band-excellent">90–100 · Excellent</span><small>Polished and targeted. Only minor refinements needed.</small></div><div><span class="band-chip band-good">75–89 · Good</span><small>Solid, with targeted improvements to wording, evidence or tailoring.</small></div><div><span class="band-chip band-developing">60–74 · Developing</span><small>Several important improvements needed, especially evidence and clarity.</small></div><div><span class="band-chip band-major">Below 60 · Needs major revision</span><small>Needs restructuring, stronger evidence and more relevant content.</small></div></div><p class="guide-honesty">Our reviewer will never invent experience, numbers or skills. Only add achievements that are true and that you can explain in an interview.</p></article>
+        </div>
+      </section>
+
+      <section class="page" id="page-admin">
+        <div class="page-intro"><div class="eyebrow">SITE MANAGEMENT</div><h1>Admin <span>settings</span></h1><p class="lead">Manage the learning video and social accounts displayed on ElevateCV.</p></div>
+        <div class="admin-warning"><span>!</span><div><strong>Prototype access control</strong><p>This admin screen is protected by a local demo passcode only. It is not secure authentication. Before publishing, connect a server-side login system and store admin permissions on the server.</p></div></div>
+        <div id="adminLogin" class="panel admin-login"><h2>Admin sign in</h2><p>Enter the demo passcode to manage footer content.</p><label for="adminPass">Admin passcode</label><input id="adminPass" type="password" placeholder="Enter passcode" /><button class="button button-primary" id="adminLoginBtn">Unlock settings</button><small class="demo-note">Demo passcode: <b>elevate-admin</b> (change this in app.js; do not use this for a live site).</small><p id="adminError" class="error-text"></p></div>
+        <div id="adminSettings" class="panel hidden"><div class="section-heading inner-heading"><div><h2>Footer content</h2><p>Only the admin settings area can change these details in this prototype.</p></div><span class="saved-label" id="savedLabel">LOCAL SETTINGS</span></div>
+          <div class="admin-fields"><div><label for="adminPlaylist">YouTube playlist URL</label><input id="adminPlaylist" type="url" /><small>Paste a YouTube playlist URL. It will appear in the video section at the bottom of the site.</small></div><div><label for="adminInstagram">Instagram profile URL or username</label><input id="adminInstagram" type="text" /><small>Current account: @Cvreviewer</small></div><div><label for="adminTikTok">TikTok profile URL or username</label><input id="adminTikTok" type="text" /><small>Current account: @Cvreviewer</small></div></div>
+          <button class="button button-primary" id="saveAdmin">Save footer settings</button> <button class="subtle-button" id="adminLogout">Lock settings</button>
+        </div>
+      </section>
+
+      <footer class="site-footer">
+        <div class="footer-main"><div class="footer-brand"><a class="brand" href="#"><span class="brand-mark">E</span><span>Elevate<span class="brand-light">CV</span></span></a><p>Clearer CVs. Stronger applications. Better next steps.</p><div class="social-links"><a id="instagramLink" href="https://www.instagram.com/Cvreviewer/" target="_blank" rel="noopener">◎ <span>Instagram</span></a><a id="tiktokLink" href="https://www.tiktok.com/@Cvreviewer" target="_blank" rel="noopener">♪ <span>TikTok</span></a></div></div>
+          <div class="footer-video"><div class="video-heading"><div><span class="eyebrow">LEARN & LEVEL UP</span><h3>Career tips, in one place.</h3></div><span class="video-play">▶</span></div><div class="video-frame" id="videoFrame"><iframe id="youtubeFrame" title="ElevateCV learning playlist" src="https://www.youtube.com/embed/videoseries?list=PLhjLO-ekrsRu1FXl1Sx3yAl0pL_5c75bv" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen loading="lazy"></iframe></div><small class="video-caption">A playlist selected by the ElevateCV admin team.</small></div>
+        </div>
+        <div class="footer-bottom"><span>© <span id="year"></span> ElevateCV. All rights reserved.</span><span>Built to help you move forward <b>✦</b></span></div>
+      </footer>
+    </main>
+  </div>
+  <div class="toast" id="toast" role="status"></div>
+  <script src="rubric.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
