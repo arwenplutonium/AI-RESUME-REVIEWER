@@ -9,8 +9,8 @@ import Mochi from "./Mochi.jsx";
 */
 const CHAT_KEY = "mochicv_chat";
 const ERRORS = {
-  missing_key: "My AI brain isn't connected yet. (Site admin: add ANTHROPIC_API_KEY in Netlify → Site configuration → Environment variables, then redeploy.)",
-  bad_key: "My AI key isn't working. (Site admin: check the ANTHROPIC_API_KEY value in Netlify.)",
+  missing_key: "My AI brain isn't connected yet. (Site admin: add GROQ_API_KEY or ANTHROPIC_API_KEY in Netlify → Site configuration → Environment variables, then redeploy.)",
+  bad_key: "My AI key isn't working. (Site admin: check the API key value in Netlify.)",
   rate_limited: "Whoa, that's a lot of questions at once! Give me a minute and try again.",
   busy: "I'm a bit busy right now. Please try again in a moment.",
   network: "I couldn't reach my AI brain. Check your internet and try again.",

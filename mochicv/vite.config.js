@@ -12,7 +12,7 @@ function mochiApiDev(env) {
     configureServer(server) {
       server.middlewares.use("/api/mochi", async (req, res) => {
         try {
-          for (const k of ["ANTHROPIC_API_KEY", "ANTHROPIC_WORKSPACE_ID", "MOCHI_MODEL", "MOCHI_API_URL"]) {
+          for (const k of ["GROQ_API_KEY", "GROQ_MODEL", "GROQ_API_URL", "ANTHROPIC_API_KEY", "ANTHROPIC_WORKSPACE_ID", "MOCHI_MODEL", "MOCHI_API_URL"]) {
             if (env[k]) process.env[k] = env[k];
           }
           const chunks = [];

@@ -29,16 +29,18 @@ npm run build    # creates the dist/ folder
 - 📋 Copy a text summary, or print / save as PDF.
 
 ## Mochi AI chat 🐰💬
-Mochi is an AI helper powered by Claude. In cute mode, click the floating Mochi. In professional mode, use the **Ask Mochi** button or the sidebar card. She can explain your latest score, help rewrite bullets (without inventing facts), and give cover letter and interview tips.
+Mochi is an AI helper powered by **Groq** or **Claude**, whichever key you add. In cute mode, click the floating Mochi. In professional mode, use the **Ask Mochi** button or the sidebar card. She can explain your latest score, help rewrite bullets (without inventing facts), and give cover letter and interview tips.
 
 **How it stays safe:** the API key lives only on the server, in `netlify/functions/mochi-chat.mjs`, and never in the website code. The site calls `/api/mochi`, the function adds the key, and it asks Claude. Only your messages and a short summary of your latest review are sent, never your CV text, unless you paste it into the chat.
 
 ### Setup on Netlify
-1. Get an API key at platform.claude.com, under **API keys**. Set a monthly **spend limit** in the Console too.
-2. In Netlify, go to your site, then **Site configuration → Environment variables → Add a variable**. Key: `ANTHROPIC_API_KEY`. Value: your key.
+1. Get a key: **Groq** at console.groq.com, under **API Keys**, or **Claude** at platform.claude.com, under **API keys**.
+2. In Netlify, go to your site, then **Site configuration → Environment variables → Add a variable**:
+   - Groq: key `GROQ_API_KEY`
+   - Claude: key `ANTHROPIC_API_KEY`
 3. Go to **Deploys → Trigger deploy → Deploy site**.
 
-Optional variables: `MOCHI_MODEL` (default `claude-haiku-5-5`, which is fast and low cost) and `ANTHROPIC_WORKSPACE_ID`, if your key needs one.
+Optional: `GROQ_MODEL` (default `openai/gpt-oss-20b`), `MOCHI_MODEL` (Claude, default `claude-haiku-5-5`), `ANTHROPIC_WORKSPACE_ID`. If both keys are set, Groq is used.
 
 ### Testing on your PC
 Copy `.env.example` to `.env`, paste your key in, then run `npm run dev`. `.env` is in `.gitignore`, so it never gets pushed. **Never put your key in any file under `src/`.**

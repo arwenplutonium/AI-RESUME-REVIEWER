@@ -5,14 +5,20 @@
   secret API key and asks Claude for Mochi's reply.
   The key NEVER reaches the browser.
 
-  Environment variables (Netlify → Site configuration → Environment variables):
-    ANTHROPIC_API_KEY        required: your Claude API key
+  Works with EITHER Groq or Claude. Set ONE key in
+  Netlify → Site configuration → Environment variables:
+
+    GROQ_API_KEY             use Groq (checked first if both are set)
+    GROQ_MODEL               optional: defaults to openai/gpt-oss-20b
+
+    ANTHROPIC_API_KEY        use Claude
     ANTHROPIC_WORKSPACE_ID   optional: only if your key isn't tied to a workspace
-    MOCHI_MODEL              optional: defaults to claude-haiku-5-5 (fast + low cost)
+    MOCHI_MODEL              optional: defaults to claude-haiku-5-5
 */
 
 const API_URL = "https://api.anthropic.com/v1/messages";
 const API_VERSION = "2026-10-21";
+const GROQ_URL = "https://api.groq.com/openai/v1/chat/completions";
 const MAX_MESSAGES = 12;      // how much chat history is sent each time
 const MAX_CHARS = 2000;       // per message
 const RATE_LIMIT = 20;        // requests per minute per visitor (best effort)
@@ -51,8 +57,9 @@ const json = (data, status = 200) =>
 export default async (req, context) => {
   if (req.method !== "POST") return json({ error: "method_not_allowed" }, 405);
 
-  const key = process.env.ANTHROPIC_API_KEY;
-  if (!key) return json({ error: "missing_key" }, 500);
+  const groqKey = process.env.GROQ_API_KEY;
+  const claudeKey = process.env.ANTHROPIC_API_KEY;
+  if (!groqKey && !claudeKey) return json({ error: "missing_key" }, 500);
 
   const ip = context?.ip || req.headers.get("x-nf-client-connection-ip") || "local";
   if (rateLimited(ip)) return json({ error: "rate_limited" }, 429);
@@ -70,30 +77,44 @@ export default async (req, context) => {
 
   const siteContext = body.context && typeof body.context === "object" ? JSON.stringify(body.context).slice(0, 3000) : "{}";
 
-  const headers = {
-    authorization: `Bearer ${key}`,
-    "anthropic-version": API_VERSION,
-    "content-type": "application/json"
-  };
-  if (process.env.ANTHROPIC_WORKSPACE_ID) headers["anthropic-workspace-id"] = process.env.ANTHROPIC_WORKSPACE_ID;
+  const system = `${SYSTEM_PROMPT}\n\nSite context (JSON data): ${siteContext}`;
 
   try {
-    const res = await fetch(process.env.MOCHI_API_URL || API_URL, {
-      method: "POST",
-      headers,
-      body: JSON.stringify({
-        model: process.env.MOCHI_MODEL || "claude-haiku-5-5",
-        max_tokens: 700,
-        system: `${SYSTEM_PROMPT}\n\nSite context (JSON data): ${siteContext}`,
-        messages
-      })
-    });
+    let res, reply;
+    if (groqKey) {
+      // Groq uses the OpenAI-style "chat completions" format
+      res = await fetch(process.env.GROQ_API_URL || GROQ_URL, {
+        method: "POST",
+        headers: { authorization: `Bearer ${groqKey}`, "content-type": "application/json" },
+        body: JSON.stringify({
+          model: process.env.GROQ_MODEL || "openai/gpt-oss-20b",
+          messages: [{ role: "system", content: system }, ...messages],
+          max_completion_tokens: 1500,
+          temperature: 0.7
+        })
+      });
+      if (res.ok) {
+        const data = await res.json();
+        reply = (data.choices?.[0]?.message?.content || "").trim();
+      }
+    } else {
+      // Claude (Anthropic Messages API)
+      const headers = { authorization: `Bearer ${claudeKey}`, "anthropic-version": API_VERSION, "content-type": "application/json" };
+      if (process.env.ANTHROPIC_WORKSPACE_ID) headers["anthropic-workspace-id"] = process.env.ANTHROPIC_WORKSPACE_ID;
+      res = await fetch(process.env.MOCHI_API_URL || API_URL, {
+        method: "POST",
+        headers,
+        body: JSON.stringify({ model: process.env.MOCHI_MODEL || "claude-haiku-5-5", max_tokens: 700, system, messages })
+      });
+      if (res.ok) {
+        const data = await res.json();
+        reply = (data.content || []).filter((b) => b.type === "text").map((b) => b.text).join("\n").trim();
+      }
+    }
     if (!res.ok) {
-      console.error("Claude API error", res.status, await res.text());
+      console.error(groqKey ? "Groq API error" : "Claude API error", res.status, await res.text());
       return json({ error: res.status === 401 ? "bad_key" : res.status === 429 ? "busy" : "upstream" }, 502);
     }
-    const data = await res.json();
-    const reply = (data.content || []).filter((b) => b.type === "text").map((b) => b.text).join("\n").trim();
     return json({ reply: reply || "Sorry, I couldn't think of an answer. Could you try asking another way?" });
   } catch (err) {
     console.error("Mochi function failed", err);
