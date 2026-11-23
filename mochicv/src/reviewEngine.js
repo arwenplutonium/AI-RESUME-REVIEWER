@@ -11,7 +11,7 @@ export function bandFor(score) { return RUBRIC.bands.find(b => score >= b.min); 
    { score, issue, recommendation, quote?, example? }
    ================================================================= */
 
-function prepare(text, role, job, company) {
+export function prepare(text, role, job, company) {
   const lines = text.split(/\r?\n/).map(l => l.trim()).filter(Boolean);
   const lower = text.toLowerCase();
   const words = text.trim().split(/\s+/).filter(Boolean);
@@ -29,7 +29,9 @@ function prepare(text, role, job, company) {
     const terms = job.toLowerCase().match(/[a-z][a-z+#.\-]{3,}/g) || [];
     jobTerms = [...new Set(terms.map(t => t.replace(/[.\-]+$/, "")))].filter(w => w.length >= 4 && !WORDS.stopWords.includes(w));
   }
-  const matchedTerms = jobTerms.filter(w => new RegExp("\\b" + escapeRegex(w) + "\\b").test(lower));
+  // Match singular/plural and simple word forms (dashboard/dashboards, analyst/analysts)
+  const stemOf = (w) => w.replace(/(ies|es|s|ing|ed)$/, "");
+  const matchedTerms = jobTerms.filter(w => new RegExp("\\b" + escapeRegex(stemOf(w).length >= 4 ? stemOf(w) : w)).test(lower));
   const missingTerms = jobTerms.filter(w => !matchedTerms.includes(w));
   const keywordFit = jobTerms.length ? matchedTerms.length / jobTerms.length : 0;
 
@@ -68,7 +70,7 @@ function dateFormats(d) {
   if (/\b'\d{2}\b/.test(d.text)) formats.add("'YY");
   return [...formats];
 }
-function sensitiveInfo(d) {
+export function sensitiveInfo(d) {
   const flags = [];
   if (/\b(date of birth|d\.o\.b|dob|born on|birth date)\b/i.test(d.text)) flags.push("date of birth");
   if (/\b(marital status|married|single|divorced|widowed)\b/i.test(d.text) && /\b(marital|status)\b/i.test(d.text)) flags.push("marital status");
@@ -111,7 +113,8 @@ const RESUME_CHECKS = {
     const longLines = d.lines.filter(l => l.split(/\s+/).length > 40);
     if (longLines.length === 0) s += 3; else if (longLines.length <= 2) s += 1;
     if (d.words.length >= 200 && d.words.length <= 900) s += 3; else if (d.words.length >= 120 && d.words.length <= 1200) s += 1;
-    if (d.words.length < 150) s -= 3; // very short CVs rarely give enough detail
+    if (d.words.length < 180) s -= 2; // very short CVs rarely give enough detail
+    if (d.words.length < 120) s -= 2;
     s = clamp(s, 0, 15);
     let issue = "Layout looks easy to scan.", rec = "Keep headings, spacing and bullet styles consistent.";
     if (headings.length < 3) { issue = "Section headings are hard to identify."; rec = "Use clear headings such as PROFILE, EXPERIENCE, EDUCATION and SKILLS on their own lines."; }
@@ -176,11 +179,18 @@ const RESUME_CHECKS = {
     const skillText = skillsLineIdx >= 0 ? d.lines.slice(skillsLineIdx, skillsLineIdx + 6).join(", ") : "";
     const items = skillText.split(/[,;•|\n]/).map(x => x.trim()).filter(x => x && x.length < 40).length;
     if (items >= 6) s += 3; else if (items >= 3) s += 2;
-    if (d.jobTerms.length) s += Math.round(7 * clamp(d.keywordFit / 0.6, 0, 1));
+    if (d.jobTerms.length) s += Math.round(7 * clamp(d.keywordFit / 0.75, 0, 1));
     else s += 4;
+    // Skills should be backed up by evidence elsewhere in the CV
+    const listed = skillText.replace(/^[^:\n]*skills:?/i, "").split(/[,;•|\n]/).map(x => x.trim().toLowerCase()).filter(x => x && x.length < 30 && !/skills/.test(x));
+    const body = d.lines.filter((_, i) => skillsLineIdx < 0 || i < skillsLineIdx || i > skillsLineIdx + 5).join(" ").toLowerCase();
+    const evidenced = listed.filter(k => body.includes(k.split(/\s|\(/)[0]));
+    const unsupported = listed.length >= 4 && evidenced.length / listed.length < 0.35;
+    if (unsupported) s -= 3;
     s = clamp(s, 0, 15);
     let issue = "Skills are listed and relevant.", rec = "Back up key skills with an example in your experience section.";
     if (skillsLineIdx < 0) { issue = "No clear Skills section found."; rec = "Add a short Skills section (technical, software, languages, transferable skills) — only skills you can demonstrate."; }
+    else if (unsupported) { issue = `Most listed skills aren’t backed up elsewhere (e.g. ${listed.filter(k => !evidenced.includes(k)).slice(0, 3).join(", ")}).`; rec = "Show where you used your key skills in an experience or project bullet, e.g. “Built a Power BI dashboard…” (only if true)."; }
     else if (d.jobTerms.length && d.keywordFit < 0.6) { issue = `Some job-description keywords are missing: ${d.missingTerms.slice(0, 6).join(", ")}.`; rec = "If you genuinely have these skills, add them naturally to your skills and experience sections."; }
     else if (!d.jobTerms.length) { issue = "Keyword match not checked — no job description provided."; rec = "Paste a job description to check how well your skills align with the role."; }
     return { score: s, issue, recommendation: rec };

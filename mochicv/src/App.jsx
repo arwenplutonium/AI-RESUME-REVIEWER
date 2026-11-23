@@ -12,7 +12,7 @@ import Guide from "./pages/Guide.jsx";
 import Admin from "./pages/Admin.jsx";
 import { useStored } from "./storage.js";
 import { sfx } from "./sfx.js";
-import { DEFAULT_LINKS, PAGE_HINTS, STICKERS, TIPS } from "./data.js";
+import { BADGES, DEFAULT_LINKS, PAGE_HINTS, STICKERS, TIPS } from "./data.js";
 
 const KONAMI = ["ArrowUp", "ArrowUp", "ArrowDown", "ArrowDown", "ArrowLeft", "ArrowRight", "ArrowLeft", "ArrowRight", "b", "a"];
 
@@ -39,6 +39,11 @@ export default function App() {
   const [sound, setSound] = useStored("elevatecv_sound", false);
   const [bubblesOn, setBubblesOn] = useStored("elevatecv_bubbles", true);
   const [mood, setMood] = useStored("elevatecv_mood", 0);
+  const [badges, setBadges] = useStored("mochicv_badges", []);
+  const [secret, setSecret] = useStored("mochicv_secret", false);
+  const [theme, setTheme] = useStored("mochicv_theme", "cute"); // "cute" or "pro"
+  const [switched, setSwitched] = useStored("mochicv_switched", false);
+  const pro = theme === "pro";
   const [calm, setCalm] = useState(false);
   const [toast, setToast] = useState(null);
   const [say, setSay] = useState(PAGE_HINTS.home);
@@ -47,7 +52,7 @@ export default function App() {
   const titleClicks = useRef(0);
   const toastTimer = useRef();
 
-  const play = useCallback((name) => { if (sound) sfx[name]?.(); }, [sound]);
+  const play = useCallback((name) => { if (sound && document.documentElement.classList.contains("pro") === false) sfx[name]?.(); }, [sound]);
 
   const notify = useCallback((msg) => {
     setToast(msg);
@@ -118,6 +123,7 @@ export default function App() {
       if (seq.join() === KONAMI.join()) {
         setConfetti((c) => ({ n: c.n + 1, hearts: true }));
         notify("♡ secret unlocked: heart rain! ♡");
+        setSecret(true);
         setSay("You found the secret code! You’re amazing ٩(◕‿◕)۶");
         play("fanfare");
         seq = [];
@@ -127,7 +133,23 @@ export default function App() {
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [notify, play, animateMochi]);
+  }, [notify, play, animateMochi, setSecret]);
+
+  // Award badges when their conditions are met
+  useEffect(() => {
+    const stats = { reviews, popped, night, secret, switched };
+    const fresh = BADGES.filter((b) => !badges.includes(b.id) && b.earned(stats));
+    if (!fresh.length) return;
+    setBadges((bs) => [...bs, ...fresh.map((b) => b.id)]);
+    const t = setTimeout(() => {
+      notify(`🏅 Badge earned: ${fresh[0].emoji} ${fresh[0].name}!`);
+      play("fanfare");
+    }, 900);
+    return () => clearTimeout(t);
+  }, [reviews, popped, night, secret, switched, badges, setBadges, notify, play]);
+
+  // Latest score for a document type (used to show "+5 since last time")
+  const previousScore = (type) => reviews.find((r) => r.type === type)?.score;
 
   // New review result
   const onResult = (r) => {
@@ -149,7 +171,23 @@ export default function App() {
     id: i, left: Math.random() * 100, top: Math.random() * 100, delay: Math.random() * 3
   })), []);
 
-  useEffect(() => { document.documentElement.classList.toggle("night", night); }, [night]);
+  // Theme classes live on <html>: "pro" for the professional look, "night" only in cute mode
+  useEffect(() => {
+    const root = document.documentElement;
+    root.classList.toggle("pro", pro);
+    root.classList.toggle("night", night && !pro);
+  }, [night, pro]);
+
+  // Flip between cute and professional, with a soft colour fade
+  const toggleTheme = useCallback(() => {
+    const root = document.documentElement;
+    root.classList.add("theme-fade");
+    setTimeout(() => root.classList.remove("theme-fade"), 600);
+    setTheme((t) => (t === "pro" ? "cute" : "pro"));
+    setSwitched(true);
+    notify(pro ? "✿ Cute mode — welcome back, Mochi!" : "Professional mode on");
+    if (pro) play("sparkle");
+  }, [pro, notify, play, setTheme, setSwitched]);
 
   // Mochi's speech bubble fades away by itself after a few seconds
   useEffect(() => {
@@ -161,21 +199,21 @@ export default function App() {
   return (
     <>
       <div className="page-blobs" aria-hidden="true"><span /><span /><span /></div>
-      {night && <div className="night-stars" aria-hidden="true">{stars.map((s) => <i key={s.id} style={{ left: `${s.left}%`, top: `${s.top}%`, animationDelay: `${s.delay}s` }} />)}</div>}
+      {night && !pro && <div className="night-stars" aria-hidden="true">{stars.map((s) => <i key={s.id} style={{ left: `${s.left}%`, top: `${s.top}%`, animationDelay: `${s.delay}s` }} />)}</div>}
 
-      <Bubbles enabled={bubblesOn} calm={calm} onPop={onPop} />
-      <SparkleTrail enabled={bubblesOn} />
-      <Confetti fire={confetti.n} hearts={confetti.hearts} />
+      <Bubbles enabled={bubblesOn && !pro} calm={calm} onPop={onPop} />
+      <SparkleTrail enabled={bubblesOn && !pro} />
+      {!pro && <Confetti fire={confetti.n} hearts={confetti.hearts} />}
 
       <div className="window-wrap">
         <div className="window">
           <span className="ear left" /><span className="ear right" />
-          <Header page={page} go={go} links={links} onTitleClick={onTitleClick} mochiAction={mochiAction} onMochiClick={onMochiClick} />
+          <Header page={page} go={go} links={links} pro={pro} onToggleTheme={toggleTheme} onTitleClick={onTitleClick} mochiAction={mochiAction} onMochiClick={onMochiClick} />
           <main className="content">
             <div className="page-enter" key={page}>
-              {page === "home" && <Home go={go} reviews={reviews} popped={popped} links={links} mood={mood} setMood={setMood} onMochiClick={onMochiClick} mochiAction={mochiAction} notify={notify} />}
-              {page === "reviewer" && <Reviewer onResult={onResult} notify={notify} setCalm={setCalm} />}
-              {page === "history" && <History reviews={reviews} go={go} clear={() => { if (confirm("Clear all review history in this browser?")) { setReviews([]); notify("History cleared ✿"); } }} />}
+              {page === "home" && <Home go={go} reviews={reviews} popped={popped} badges={badges} links={links} mood={mood} setMood={setMood} onMochiClick={onMochiClick} mochiAction={mochiAction} notify={notify} />}
+              {page === "reviewer" && <Reviewer onResult={onResult} notify={notify} setCalm={setCalm} previousScore={previousScore} />}
+              {page === "history" && <History reviews={reviews} badges={badges} go={go} clear={() => { if (confirm("Clear all review history in this browser?")) { setReviews([]); notify("History cleared ✿"); } }} />}
               {page === "guide" && <Guide />}
               {page === "admin" && <Admin settings={settings} setSettings={setSettings} notify={notify} />}
             </div>
@@ -186,14 +224,15 @@ export default function App() {
 
       {/* Floating toolbar */}
       <div className="toolbar">
-        <div className="pop-counter" title="bubbles popped">🫧 {popped}</div>
-        <button className={`tool ${bubblesOn ? "" : "off"}`} onClick={() => setBubblesOn((b) => !b)} aria-label="Toggle bubbles">🫧<span className="tip">bubbles {bubblesOn ? "on" : "off"}</span></button>
-        <button className={`tool ${sound ? "" : "off"}`} onClick={() => { setSound((s) => !s); if (!sound) sfx.chime(); }} aria-label="Toggle sound">{sound ? "🔔" : "🔕"}<span className="tip">sound {sound ? "on" : "off"}</span></button>
-        <button className="tool" onClick={() => { setNight((n) => !n); play("sparkle"); }} aria-label="Toggle night mode">{night ? "☀️" : "🌙"}<span className="tip">{night ? "day" : "night"} mode</span></button>
+        <button className="tool theme-tool" onClick={toggleTheme} aria-label="Switch theme">{pro ? "✿" : "▢"}<span className="tip">{pro ? "cute" : "professional"} mode</span></button>
+        <div className="pop-counter cute-only" title="bubbles popped">🫧 {popped}</div>
+        <button className={`tool cute-only ${bubblesOn ? "" : "off"}`} onClick={() => setBubblesOn((b) => !b)} aria-label="Toggle bubbles">🫧<span className="tip">bubbles {bubblesOn ? "on" : "off"}</span></button>
+        <button className={`tool cute-only ${sound ? "" : "off"}`} onClick={() => { setSound((s) => !s); if (!sound) sfx.chime(); }} aria-label="Toggle sound">{sound ? "🔔" : "🔕"}<span className="tip">sound {sound ? "on" : "off"}</span></button>
+        <button className="tool cute-only" onClick={() => { setNight((n) => !n); play("sparkle"); }} aria-label="Toggle night mode">{night ? "☀️" : "🌙"}<span className="tip">{night ? "day" : "night"} mode</span></button>
       </div>
 
       {/* Mochi helper */}
-      <div className="helper">
+      <div className="helper cute-only">
         {say && <div className="speech" key={say} role="status">{say}<button onClick={() => setSay(null)} aria-label="Close">×</button></div>}
         <Mochi className="mochi" action={mochiAction} onClick={onMochiClick} title="Mochi the helper — click for a tip" />
       </div>

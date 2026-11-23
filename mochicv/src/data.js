@@ -48,3 +48,20 @@ export const PAGE_HINTS = {
   guide: "Little tips for a big impression ✿",
   admin: "Psst… this area is for the MochiCV team only!"
 };
+
+// Achievement badges. `earned` receives { reviews, popped, night, secret }.
+export const BADGES = [
+  { id: "first", emoji: "🎉", name: "First step", desc: "Complete your first review", earned: (s) => s.reviews.length >= 1 },
+  { id: "good", emoji: "🌷", name: "Good vibes", desc: "Score 75 or more", earned: (s) => s.reviews.some((r) => r.score >= 75) },
+  { id: "polished", emoji: "🏆", name: "Polished", desc: "Score 90 or more", earned: (s) => s.reviews.some((r) => r.score >= 90) },
+  { id: "letter", emoji: "💌", name: "Letter writer", desc: "Review a cover letter", earned: (s) => s.reviews.some((r) => r.type === "cover") },
+  {
+    id: "glowup", emoji: "📈", name: "Glow-up", desc: "Improve a score by 10+ points",
+    earned: (s) => s.reviews.some((r, i) => { const older = s.reviews.slice(i + 1).find((o) => o.type === r.type); return older && r.score - older.score >= 10; })
+  },
+  { id: "dedicated", emoji: "⭐", name: "Dedicated", desc: "Complete 5 reviews", earned: (s) => s.reviews.length >= 5 },
+  { id: "bubbles", emoji: "🫧", name: "Bubble master", desc: "Pop 50 bubbles", earned: (s) => s.popped >= 50 },
+  { id: "owl", emoji: "🦉", name: "Night owl", desc: "Try night mode", earned: (s) => s.night },
+  { id: "secret", emoji: "🤫", name: "Secret finder", desc: "Find the hidden code", earned: (s) => s.secret },
+  { id: "switch", emoji: "🎭", name: "Switch-up", desc: "Try both cute and professional themes", earned: (s) => s.switched }
+];

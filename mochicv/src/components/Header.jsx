@@ -1,28 +1,30 @@
 import Mochi from "./Mochi.jsx";
 import Typewriter from "./Typewriter.jsx";
 import { InstagramIcon, TikTokIcon, YouTubeIcon } from "./Icons.jsx";
+import ThemeSwitch from "./ThemeSwitch.jsx";
 
 const NAV = [
-  { id: "home", label: "home" },
-  { id: "reviewer", label: "cv reviewer", badge: "new" },
-  { id: "history", label: "history" },
-  { id: "guide", label: "cv guide" },
-  { id: "admin", label: "admin" }
+  { id: "home", label: "home", proLabel: "Overview" },
+  { id: "reviewer", label: "cv reviewer", proLabel: "CV reviewer", badge: "new" },
+  { id: "history", label: "history", proLabel: "Review history" },
+  { id: "guide", label: "cv guide", proLabel: "CV guide" },
+  { id: "admin", label: "admin", proLabel: "Admin settings" }
 ];
 const PHRASES = ["clearer CVs ✿", "stronger cover letters ✉", "honest, helpful feedback ♡", "your next opportunity ☆"];
 
-export default function Header({ page, go, links, onTitleClick, mochiAction, onMochiClick }) {
+export default function Header({ page, go, links, pro, onToggleTheme, onTitleClick, mochiAction, onMochiClick }) {
   return (
     <>
       <div className="top-band" />
       <div className="scallop" />
       <div className="header-row">
-        <span className="pill status-pill"><span className="dot" /> reviews: OPEN!</span>
+        <span className="pill status-pill"><span className="dot" /> <span className="cute-only">reviews: OPEN!</span><span className="pro-only">Your workspace</span></span>
         <button className="pill title-pill" onClick={onTitleClick} title="psst… click me a few times">
-          MochiCV
+          <span className="pro-only brand-mark">M</span>MochiCV
           <small>soft on you, sharp on your CV</small>
         </button>
         <div className="icon-row">
+          <ThemeSwitch pro={pro} onToggle={onToggleTheme} />
           <a className="icon-btn c1" href={links.instagram} target="_blank" rel="noopener noreferrer" aria-label="Instagram"><InstagramIcon /></a>
           <a className="icon-btn c2" href={links.tiktok} target="_blank" rel="noopener noreferrer" aria-label="TikTok"><TikTokIcon /></a>
           <a className="icon-btn c3" href="#tv" aria-label="Career tips videos"><YouTubeIcon /></a>
@@ -40,10 +42,11 @@ export default function Header({ page, go, links, onTitleClick, mochiAction, onM
       </div>
 
       <nav className="nav-band" aria-label="Main">
+        <span className="pro-only side-label">WORKSPACE</span>
         <span className="nav-flower">✿</span>
         {NAV.map((n) => (
           <button key={n.id} className={`nav-btn ${page === n.id ? "active" : ""}`} onClick={() => go(n.id)} aria-current={page === n.id ? "page" : undefined}>
-            {n.label}{n.badge && <span className="badge">{n.badge}</span>}
+            <span className="cute-only">{n.label}</span><span className="pro-only">{n.proLabel}</span>{n.badge && <span className="badge">{n.badge}</span>}
           </button>
         ))}
         <span className="nav-flower">✿</span>

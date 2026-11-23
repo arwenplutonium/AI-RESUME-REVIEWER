@@ -11,7 +11,7 @@ export default function Footer({ embedUrl, links }) {
             <a className="chip" href={links.instagram} target="_blank" rel="noopener noreferrer">◎ Instagram</a>
             <a className="chip" href={links.tiktok} target="_blank" rel="noopener noreferrer">♪ TikTok</a>
           </div>
-          <p style={{ fontFamily: "var(--hand)", fontSize: 16, marginTop: 16 }}>psst… try the arrow keys: ↑ ↑ ↓ ↓ ← → ← → B A</p>
+          <p className="cute-only" style={{ fontFamily: "var(--hand)", fontSize: 16, marginTop: 16 }}>psst… try the arrow keys: ↑ ↑ ↓ ↓ ← → ← → B A</p>
         </div>
         <div id="tv">
           <h3>📺 career tips tv</h3>

@@ -18,6 +18,23 @@ To make a version you can upload anywhere (GitHub Pages, Netlify, etc.):
 npm run build    # creates the dist/ folder
 ```
 
+## Reviewer features
+- 📄 **Reads PDF, DOCX and TXT files** privately in the browser (drag and drop works). Scanned-image PDFs have no text to read.
+- ⚡ **Live check**: a score that updates as you type, plus the next best fix.
+- ✨ **Try a sample** to see a full review instantly. Your draft is saved in the tab, and **Ctrl + Enter** runs the review.
+- 📊 **Overview**: score, band, change since your last review, CV health stats, top priorities, quick wins, job-keyword match (green = found, pink = missing), rubric scores, detailed feedback, action plan and ethical check.
+- 🖍 **Highlighter**: your text with action verbs, numbers, weak phrases, passive voice, spelling, exaggeration and private info marked.
+- ✎ **Fix my bullets**: honest rewrite templates for weak lines (e.g. “Responsible for answering…” → “Answered…”) plus a clickable action-verb bank. It never invents results; you fill the [brackets] with true details.
+- 💬 **Interview prep**: questions an employer might ask based on your document, with STAR answer prompts.
+- 📋 Copy a text summary, or print / save as PDF.
+
+## Two themes: cute ✿ and professional ▢
+Use the switch in the header (or the round button in the floating toolbar) to flip between:
+- **Cute**: the pastel Mochi design, with bubbles, sparkles, sounds, confetti and the Mochi helper.
+- **Professional**: the original clean ElevateCV look, with a left sidebar, purple and navy colours, Manrope and DM Sans fonts, flat white cards and a navy footer. The playful extras are switched off.
+
+The choice is saved in the browser. All of the professional styling sits under `.pro` at the end of `src/styles.css`. `.cute-only` and `.pro-only` classes show content in just one theme.
+
 ## Fun things to find
 - 🫧 **Bubbles**: pop them to collect 8 stickers in the treasure box. Golden ★ bubbles are worth 5 and give a lucky tip.
 - 🐰 **Mochi** (the mascot): its eyes follow your mouse. Click it for a tip; it hops, blinks and dances.
@@ -25,6 +42,8 @@ npm run build    # creates the dist/ folder
 - 🎉 **Confetti** for scores of 75 or more, and when you unlock a sticker.
 - 🌙 **Night mode**, 🔔 **sound effects** (off by default) and a bubble on/off switch, all in the bottom-left toolbar.
 - 🤫 **Secrets**: click the MochiCV title 5 times; type `mochi` anywhere on the page; try the Konami code ↑ ↑ ↓ ↓ ← → ← → B A.
+- 🏅 **10 badges** to earn (including 🎭 Switch-up for trying both themes) (first review, score 90+, glow-up, night owl, secret finder…).
+- 📈 **Progress chart** on the History page.
 - Bubbles fade while you type in the reviewer, so they never get in the way.
 
 ## Project structure
@@ -37,6 +56,9 @@ src/
   data.js               tips, moods, stickers, updates, admin passcode
   rubric.js             Harvard-based rubric: categories, points, bands, word lists
   reviewEngine.js       the scoring logic (rule-based demo)
+  insights.js           highlighter, quick wins, bullet fixes, interview questions
+  extractText.js        reads PDF / DOCX / TXT in the browser
+  samples.js            sample CV, job ad and cover letter
   storage.js            saves settings/history in the browser
   sfx.js                tiny sound effects (no audio files)
   components/           Header, Footer, Mochi, Bubbles, SparkleTrail, Confetti, Typewriter, Results, Icons
@@ -50,6 +72,6 @@ src/
 
 ## Prototype limitations (before going live)
 - The review is **rule-based keyword and pattern matching**, not real AI. Connect a server-side AI endpoint for genuine analysis, and keep API keys on the server.
-- PDF/DOCX text isn't extracted yet: paste the text, or upload a .txt file.
+- Old .doc files and scanned PDFs can't be read. Save as .docx or a text-based PDF instead.
 - The admin passcode (`elevate-admin`) is in `src/data.js`, so anyone can see it. Settings save only in that browser. Add real login and a database before launch.
 - History stores only scores (no CV text), in the visitor's own browser.
