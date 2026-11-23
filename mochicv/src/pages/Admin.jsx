@@ -17,7 +17,8 @@ export default function Admin({ settings, setSettings, notify }) {
     setSettings({
       playlist: form.playlist.trim() || DEFAULT_LINKS.playlist,
       instagram: form.instagram.trim() || DEFAULT_LINKS.instagram,
-      tiktok: form.tiktok.trim() || DEFAULT_LINKS.tiktok
+      tiktok: form.tiktok.trim() || DEFAULT_LINKS.tiktok,
+      youtube: (form.youtube || "").trim() || DEFAULT_LINKS.youtube
     });
     notify("Saved on this device ♡");
   }
@@ -48,6 +49,8 @@ export default function Admin({ settings, setSettings, notify }) {
             <input id="ig" className="input" value={form.instagram} onChange={(e) => setForm({ ...form, instagram: e.target.value })} />
             <label className="field-label" htmlFor="tt">TikTok username or URL</label>
             <input id="tt" className="input" value={form.tiktok} onChange={(e) => setForm({ ...form, tiktok: e.target.value })} />
+            <label className="field-label" htmlFor="yt">YouTube channel (username or URL)</label>
+            <input id="yt" className="input" value={form.youtube || ""} onChange={(e) => setForm({ ...form, youtube: e.target.value })} placeholder="mochicvs" />
             <div style={{ display: "flex", gap: 10, marginTop: 16 }}>
               <button className="btn" type="submit">save ♡</button>
               <button className="btn soft" type="button" onClick={() => { setUnlocked(false); setPass(""); }}>lock</button>

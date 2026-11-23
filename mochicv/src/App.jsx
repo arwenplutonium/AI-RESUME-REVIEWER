@@ -5,6 +5,7 @@ import Mochi from "./components/Mochi.jsx";
 import Bubbles from "./components/Bubbles.jsx";
 import SparkleTrail from "./components/SparkleTrail.jsx";
 import Confetti from "./components/Confetti.jsx";
+import MochiChat from "./components/MochiChat.jsx";
 import Home from "./pages/Home.jsx";
 import Reviewer from "./pages/Reviewer.jsx";
 import History from "./pages/History.jsx";
@@ -16,11 +17,14 @@ import { BADGES, DEFAULT_LINKS, PAGE_HINTS, STICKERS, TIPS } from "./data.js";
 
 const KONAMI = ["ArrowUp", "ArrowUp", "ArrowDown", "ArrowDown", "ArrowLeft", "ArrowRight", "ArrowLeft", "ArrowRight", "b", "a"];
 
+// Accepts a full link or just a username (with or without @) and returns a clean URL
 function normalizeUrl(value, platform) {
-  const v = (value || "").trim();
-  if (/^https?:\/\//i.test(v)) return v;
-  const name = v.replace(/^@/, "") || "Cvreviewer";
-  return platform === "instagram" ? `https://www.instagram.com/${name}/` : `https://www.tiktok.com/@${name}`;
+  const v = (value || "").trim() || DEFAULT_LINKS[platform];
+  if (/^https?:\/\//i.test(v)) return v.split("?")[0];
+  const name = v.replace(/^@/, "");
+  if (platform === "instagram") return `https://www.instagram.com/${name}/`;
+  if (platform === "youtube") return `https://www.youtube.com/@${name}`;
+  return `https://www.tiktok.com/@${name}`;
 }
 function playlistEmbed(url) {
   try {
@@ -33,7 +37,7 @@ function playlistEmbed(url) {
 export default function App() {
   const [page, setPage] = useState("home");
   const [reviews, setReviews] = useStored("elevatecv_reviews_v2", []);
-  const [settings, setSettings] = useStored("elevatecv_footer", DEFAULT_LINKS);
+  const [settings, setSettings] = useStored("mochicv_links", DEFAULT_LINKS);
   const [popped, setPopped] = useStored("elevatecv_popped", 0);
   const [night, setNight] = useStored("elevatecv_night", false);
   const [sound, setSound] = useStored("elevatecv_sound", false);
@@ -45,6 +49,8 @@ export default function App() {
   const [switched, setSwitched] = useStored("mochicv_switched", false);
   const pro = theme === "pro";
   const [calm, setCalm] = useState(false);
+  const [chatOpen, setChatOpen] = useState(false);
+  const [lastResult, setLastResult] = useState(null);
   const [toast, setToast] = useState(null);
   const [say, setSay] = useState(PAGE_HINTS.home);
   const [mochiAction, setMochiAction] = useState(null);
@@ -153,6 +159,7 @@ export default function App() {
 
   // New review result
   const onResult = (r) => {
+    setLastResult(r);
     setReviews((rs) => [{ type: r.type, role: r.role, company: r.company, score: r.score, band: r.band, words: r.words, improvements: r.priorities.length, date: r.date }, ...rs].slice(0, 30));
     if (r.score >= 75) { setConfetti((c) => ({ n: c.n + 1, hearts: false })); play("fanfare"); animateMochi("dance"); }
     else { play("chime"); animateMochi("hop"); }
@@ -162,9 +169,27 @@ export default function App() {
       "Don’t worry — every great CV starts somewhere. Follow the action plan ♡");
   };
 
+  // What Mochi's AI knows about the visitor's session (no CV text is sent)
+  const chatContext = useMemo(() => ({
+    page,
+    theme: pro ? "professional" : "cute",
+    latestReview: lastResult ? {
+      documentType: lastResult.type === "cover" ? "cover letter" : "CV",
+      role: lastResult.role, company: lastResult.company || undefined,
+      score: lastResult.score, band: lastResult.band, words: lastResult.words, summary: lastResult.summary,
+      categories: lastResult.rows.map((r) => ({ name: r.name, score: r.score, max: r.max, issue: r.issue, recommendation: r.recommendation })),
+      topPriorities: lastResult.priorities.map((p) => p.name)
+    } : reviews[0] ? {
+      documentType: reviews[0].type === "cover" ? "cover letter" : "CV", role: reviews[0].role,
+      score: reviews[0].score, band: reviews[0].band, note: "From an earlier visit; category details aren't stored."
+    } : null,
+    reviewsDone: reviews.length
+  }), [page, pro, lastResult, reviews]);
+
   const links = useMemo(() => ({
     instagram: normalizeUrl(settings.instagram, "instagram"),
-    tiktok: normalizeUrl(settings.tiktok, "tiktok")
+    tiktok: normalizeUrl(settings.tiktok, "tiktok"),
+    youtube: normalizeUrl(settings.youtube, "youtube")
   }), [settings]);
 
   const stars = useMemo(() => Array.from({ length: 40 }, (_, i) => ({
@@ -208,7 +233,7 @@ export default function App() {
       <div className="window-wrap">
         <div className="window">
           <span className="ear left" /><span className="ear right" />
-          <Header page={page} go={go} links={links} pro={pro} onToggleTheme={toggleTheme} onTitleClick={onTitleClick} mochiAction={mochiAction} onMochiClick={onMochiClick} />
+          <Header page={page} go={go} links={links} pro={pro} onToggleTheme={toggleTheme} onOpenChat={() => setChatOpen(true)} onTitleClick={onTitleClick} mochiAction={mochiAction} onMochiClick={onMochiClick} />
           <main className="content">
             <div className="page-enter" key={page}>
               {page === "home" && <Home go={go} reviews={reviews} popped={popped} badges={badges} links={links} mood={mood} setMood={setMood} onMochiClick={onMochiClick} mochiAction={mochiAction} notify={notify} />}
@@ -232,10 +257,20 @@ export default function App() {
       </div>
 
       {/* Mochi helper */}
-      <div className="helper cute-only">
-        {say && <div className="speech" key={say} role="status">{say}<button onClick={() => setSay(null)} aria-label="Close">×</button></div>}
-        <Mochi className="mochi" action={mochiAction} onClick={onMochiClick} title="Mochi the helper — click for a tip" />
+      <div className={`helper cute-only ${chatOpen ? "chat-is-open" : ""}`}>
+        {say && !chatOpen && <div className="speech" key={say} role="status">{say}<button onClick={() => setSay(null)} aria-label="Close">×</button></div>}
+        <Mochi className="mochi" action={mochiAction} onClick={() => { animateMochi("hop"); play("boop"); setChatOpen((o) => !o); }} title="Chat with Mochi" />
       </div>
+
+      {/* Professional-mode chat button: small and tidy */}
+      {!chatOpen && (
+        <button className="chat-launcher pro-only" onClick={() => setChatOpen(true)} aria-label="Ask Mochi, the AI CV helper">
+          <span className="launcher-avatar"><Mochi className="keep" track={false} /></span>
+          <span>Ask Mochi</span>
+        </button>
+      )}
+
+      <MochiChat open={chatOpen} setOpen={setChatOpen} pro={pro} context={chatContext} onReply={() => { if (!pro) { animateMochi("hop"); play("chime"); } }} />
 
       {toast && <div className="toast" key={toast} role="status">{toast}</div>}
     </>

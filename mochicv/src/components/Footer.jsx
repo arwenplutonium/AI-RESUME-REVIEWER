@@ -10,6 +10,7 @@ export default function Footer({ embedUrl, links }) {
           <div className="chip-links" style={{ justifyContent: "flex-start" }}>
             <a className="chip" href={links.instagram} target="_blank" rel="noopener noreferrer">◎ Instagram</a>
             <a className="chip" href={links.tiktok} target="_blank" rel="noopener noreferrer">♪ TikTok</a>
+            <a className="chip" href={links.youtube} target="_blank" rel="noopener noreferrer">▶ YouTube</a>
           </div>
           <p className="cute-only" style={{ fontFamily: "var(--hand)", fontSize: 16, marginTop: 16 }}>psst… try the arrow keys: ↑ ↑ ↓ ↓ ← → ← → B A</p>
         </div>
@@ -22,6 +23,7 @@ export default function Footer({ embedUrl, links }) {
             </div>
             <div className="tv-knobs"><i /><i /><i /></div>
           </div>
+          <p style={{ textAlign: "center", marginTop: 12 }}><a className="chip" href={links.youtube} target="_blank" rel="noopener noreferrer">▶ Subscribe to MochiCV on YouTube</a></p>
         </div>
       </div>
       <div className="footer-bottom">

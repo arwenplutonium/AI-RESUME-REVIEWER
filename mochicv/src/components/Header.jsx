@@ -12,7 +12,7 @@ const NAV = [
 ];
 const PHRASES = ["clearer CVs ✿", "stronger cover letters ✉", "honest, helpful feedback ♡", "your next opportunity ☆"];
 
-export default function Header({ page, go, links, pro, onToggleTheme, onTitleClick, mochiAction, onMochiClick }) {
+export default function Header({ page, go, links, pro, onToggleTheme, onOpenChat, onTitleClick, mochiAction, onMochiClick }) {
   return (
     <>
       <div className="top-band" />
@@ -27,7 +27,7 @@ export default function Header({ page, go, links, pro, onToggleTheme, onTitleCli
           <ThemeSwitch pro={pro} onToggle={onToggleTheme} />
           <a className="icon-btn c1" href={links.instagram} target="_blank" rel="noopener noreferrer" aria-label="Instagram"><InstagramIcon /></a>
           <a className="icon-btn c2" href={links.tiktok} target="_blank" rel="noopener noreferrer" aria-label="TikTok"><TikTokIcon /></a>
-          <a className="icon-btn c3" href="#tv" aria-label="Career tips videos"><YouTubeIcon /></a>
+          <a className="icon-btn c3" href={links.youtube} target="_blank" rel="noopener noreferrer" aria-label="YouTube"><YouTubeIcon /></a>
         </div>
       </div>
 
@@ -50,6 +50,12 @@ export default function Header({ page, go, links, pro, onToggleTheme, onTitleCli
           </button>
         ))}
         <span className="nav-flower">✿</span>
+        <div className="pro-only side-help">
+          <div className="side-help-avatar"><Mochi className="keep" track={false} /></div>
+          <strong>Need a hand?</strong>
+          <p>Mochi, our AI helper, can explain your score or help you rewrite a bullet.</p>
+          <button onClick={onOpenChat}>Ask Mochi <span>→</span></button>
+        </div>
       </nav>
     </>
   );

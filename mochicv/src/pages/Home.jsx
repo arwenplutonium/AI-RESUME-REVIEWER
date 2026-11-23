@@ -31,7 +31,7 @@ export default function Home({ go, reviews, popped, badges, links, mood, setMood
           <div className="chip-links">
             <a className="icon-btn c1" href={links.instagram} target="_blank" rel="noopener noreferrer" aria-label="Instagram"><InstagramIcon /></a>
             <a className="icon-btn c2" href={links.tiktok} target="_blank" rel="noopener noreferrer" aria-label="TikTok"><TikTokIcon /></a>
-            <a className="icon-btn c3" href="#tv" aria-label="Videos"><YouTubeIcon /></a>
+            <a className="icon-btn c3" href={links.youtube} target="_blank" rel="noopener noreferrer" aria-label="YouTube"><YouTubeIcon /></a>
           </div>
         </section>
 

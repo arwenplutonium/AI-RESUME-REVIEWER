@@ -1,9 +1,11 @@
 // Content you can edit without touching the components.
 
+// MochiCV's social accounts (the admin page can change these on a device)
 export const DEFAULT_LINKS = {
   playlist: "https://www.youtube.com/playlist?list=PLhjLO-ekrsRu1FXl1Sx3yAl0pL_5c75bv",
-  instagram: "@Cvreviewer",
-  tiktok: "Cvreviewer"
+  instagram: "wolf.82084202",
+  tiktok: "mochicv1",
+  youtube: "mochicvs"
 };
 
 export const ADMIN_PASSCODE = "elevate-admin"; // Demo only — replace with real server-side login before going live.
@@ -42,7 +44,7 @@ export const UPDATES = [
 ];
 
 export const PAGE_HINTS = {
-  home: "Hi! I’m Mochi ♡ Pop the bubbles to collect stickers, or start a CV review!",
+  home: "Hi! I’m Mochi ♡ Click me to chat with my AI brain, or pop the bubbles to collect stickers!",
   reviewer: "Paste your CV or cover letter and I’ll check it against the rubric ✦",
   history: "Here are all your past reviews. Look how far you’ve come! ٩(◕‿◕)۶",
   guide: "Little tips for a big impression ✿",

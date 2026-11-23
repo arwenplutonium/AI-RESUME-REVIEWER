@@ -28,6 +28,21 @@ npm run build    # creates the dist/ folder
 - 💬 **Interview prep**: questions an employer might ask based on your document, with STAR answer prompts.
 - 📋 Copy a text summary, or print / save as PDF.
 
+## Mochi AI chat 🐰💬
+Mochi is an AI helper powered by Claude. In cute mode, click the floating Mochi. In professional mode, use the **Ask Mochi** button or the sidebar card. She can explain your latest score, help rewrite bullets (without inventing facts), and give cover letter and interview tips.
+
+**How it stays safe:** the API key lives only on the server, in `netlify/functions/mochi-chat.mjs`, and never in the website code. The site calls `/api/mochi`, the function adds the key, and it asks Claude. Only your messages and a short summary of your latest review are sent, never your CV text, unless you paste it into the chat.
+
+### Setup on Netlify
+1. Get an API key at platform.claude.com, under **API keys**. Set a monthly **spend limit** in the Console too.
+2. In Netlify, go to your site, then **Site configuration → Environment variables → Add a variable**. Key: `ANTHROPIC_API_KEY`. Value: your key.
+3. Go to **Deploys → Trigger deploy → Deploy site**.
+
+Optional variables: `MOCHI_MODEL` (default `claude-haiku-5-5`, which is fast and low cost) and `ANTHROPIC_WORKSPACE_ID`, if your key needs one.
+
+### Testing on your PC
+Copy `.env.example` to `.env`, paste your key in, then run `npm run dev`. `.env` is in `.gitignore`, so it never gets pushed. **Never put your key in any file under `src/`.**
+
 ## Two themes: cute ✿ and professional ▢
 Use the switch in the header (or the round button in the floating toolbar) to flip between:
 - **Cute**: the pastel Mochi design, with bubbles, sparkles, sounds, confetti and the Mochi helper.
@@ -61,6 +76,10 @@ src/
   samples.js            sample CV, job ad and cover letter
   storage.js            saves settings/history in the browser
   sfx.js                tiny sound effects (no audio files)
+  components/MochiChat.jsx  the AI chat window
+netlify/functions/mochi-chat.mjs  server function that talks to Claude (holds the API key)
+netlify.toml            Netlify build + functions settings
+.env.example            template for your local API key
   components/           Header, Footer, Mochi, Bubbles, SparkleTrail, Confetti, Typewriter, Results, Icons
   pages/                Home, Reviewer, History, Guide, Admin
 ```
