@@ -2,7 +2,8 @@
 
 // MochiCV's social accounts (the admin page can change these on a device)
 export const DEFAULT_LINKS = {
-  playlist: "https://www.youtube.com/playlist?list=PLhjLO-ekrsRu1FXl1Sx3yAl0pL_5c75bv",
+  // "UU…" = the automatic "all uploads" playlist of the Mochi cvs channel (UCELnm4SKw2VFsO05SyD_Wpw)
+  playlist: "https://www.youtube.com/playlist?list=UUELnm4SKw2VFsO05SyD_Wpw",
   instagram: "wolf.82084202",
   tiktok: "mochicv1",
   youtube: "mochicvs"

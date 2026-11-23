@@ -31,13 +31,13 @@ function playlistEmbed(url) {
     const list = new URL(url).searchParams.get("list");
     if (list) return `https://www.youtube.com/embed/videoseries?list=${encodeURIComponent(list)}`;
   } catch { /* fall through */ }
-  return "https://www.youtube.com/embed/videoseries?list=PLhjLO-ekrsRu1FXl1Sx3yAl0pL_5c75bv";
+  return "https://www.youtube.com/embed/videoseries?list=UUELnm4SKw2VFsO05SyD_Wpw";
 }
 
 export default function App() {
   const [page, setPage] = useState("home");
   const [reviews, setReviews] = useStored("elevatecv_reviews_v2", []);
-  const [settings, setSettings] = useStored("mochicv_links", DEFAULT_LINKS);
+  const [settings, setSettings] = useStored("mochicv_links_v2", DEFAULT_LINKS);
   const [popped, setPopped] = useStored("elevatecv_popped", 0);
   const [night, setNight] = useStored("elevatecv_night", false);
   const [sound, setSound] = useStored("elevatecv_sound", false);

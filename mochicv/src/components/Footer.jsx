@@ -15,7 +15,7 @@ export default function Footer({ embedUrl, links }) {
           <p className="cute-only" style={{ fontFamily: "var(--hand)", fontSize: 16, marginTop: 16 }}>psst… try the arrow keys: ↑ ↑ ↓ ↓ ← → ← → B A</p>
         </div>
         <div id="tv">
-          <h3>📺 career tips tv</h3>
+          <h3>📺 mochi cvs tv</h3>
           <div className="tv">
             <div className="tv-screen">
               <iframe title="MochiCV career tips playlist" src={embedUrl} loading="lazy"
